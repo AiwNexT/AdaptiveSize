@@ -1,5 +1,6 @@
 package com.aiwnext.adaptivesize
 
+import android.content.Context
 import com.aiwnext.adaptivesize.sizes.FloatSize
 
 object AdaptiveSize {
@@ -8,27 +9,41 @@ object AdaptiveSize {
 	private var actualSize: Pair<Int, Int>? = null
 
 	fun setup(
+		context: Context,
 		artBoardHeight: Int,
-		artBoardWidth: Int,
-		actualHeight: Int,
-		actualWidth: Int
+		artBoardWidth: Int
 	) {
 		artBoardSize = Pair(artBoardHeight, artBoardWidth)
-		actualSize = Pair(actualHeight, actualWidth)
+		val (height, width) = context.resources
+			.displayMetrics
+			.run { heightPixels / density to widthPixels / density }
+		actualSize = Pair(height.toInt(), width.toInt())
+	}
+
+	private fun getWidthRatio(): Float {
+		return actualSize!!.second.toFloat() / artBoardSize!!.second.toFloat()
+	}
+
+	private fun getHeightRatio(): Float {
+		return actualSize!!.first.toFloat() / artBoardSize!!.first.toFloat()
 	}
 
 	internal fun adaptiveWidth(width: Float): Float {
 		return try {
-			val ratio = actualSize!!.second.toFloat() / artBoardSize!!.second.toFloat()
-			return width * ratio
+			return width * getWidthRatio()
 		} catch (e: Exception) { width }
 	}
 
 	internal fun adaptiveHeight(height: Float): Float {
 		return try {
-			val ratio = actualSize!!.first.toFloat() / artBoardSize!!.first.toFloat()
-			return height * ratio
+			return height * getHeightRatio()
 		} catch (e: Exception) { height }
+	}
+
+	internal fun adaptiveAverage(value: Float): Float {
+		return try {
+			return value * ((getHeightRatio() + getWidthRatio()) / 2)
+		} catch (e: Exception) { value }
 	}
 
 	internal fun keepingAspect(
