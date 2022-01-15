@@ -34,9 +34,9 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.github.AiwNexT'
-                artifactId = 'AdaptiveSize'
-                version = '1.0.4-alpha'
+                groupId = 'com.github.aiwnext'
+                artifactId = 'adaptive-size'
+                version = '1.0.5-alpha'
             }
         }
     }

@@ -20,14 +20,14 @@ object AdaptiveSize {
 	internal fun adaptiveWidth(width: Float): Float {
 		return try {
 			val ratio = actualSize!!.second.toFloat() / artBoardSize!!.second.toFloat()
-			return width / ratio
+			return width * ratio
 		} catch (e: Exception) { width }
 	}
 
 	internal fun adaptiveHeight(height: Float): Float {
 		return try {
 			val ratio = actualSize!!.first.toFloat() / artBoardSize!!.first.toFloat()
-			return height / ratio
+			return height * ratio
 		} catch (e: Exception) { height }
 	}
 
