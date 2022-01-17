@@ -1,38 +1,46 @@
 package com.aiwnext.adaptivesize.extensions
 
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.unit.IntSize
 import com.aiwnext.adaptivesize.AdaptiveSize
-import com.aiwnext.adaptivesize.sizes.FloatSize
-import com.aiwnext.adaptivesize.sizes.IntSize
+import com.aiwnext.adaptivesize.models.AspectSource
 
 fun Float.adaptiveWidth(): Float {
-	return AdaptiveSize.adaptiveWidth(this)
+	return AdaptiveSize.instance().adaptiveWidth(this)
 }
 
 fun Float.adaptiveHeight(): Float {
-	return AdaptiveSize.adaptiveHeight(this)
+	return AdaptiveSize.instance().adaptiveHeight(this)
 }
 
 fun Float.adaptiveAverage(): Float {
-	return AdaptiveSize.adaptiveAverage(this)
+	return AdaptiveSize.instance().adaptiveAverage(this)
 }
 
 fun Int.adaptiveWidth(): Int {
-	return AdaptiveSize.adaptiveWidth(this.toFloat()).toInt()
+	return AdaptiveSize.instance().adaptiveWidth(this.toFloat()).toInt()
 }
 
 fun Int.adaptiveHeight(): Int {
-	return AdaptiveSize.adaptiveHeight(this.toFloat()).toInt()
+	return AdaptiveSize.instance().adaptiveHeight(this.toFloat()).toInt()
 }
 
 fun Int.adaptiveAverage(): Int {
-	return AdaptiveSize.adaptiveAverage(this.toFloat()).toInt()
+	return AdaptiveSize.instance().adaptiveAverage(this.toFloat()).toInt()
 }
 
-fun Pair<Float, Float>.keepingAspect(byHeight: Boolean = true): FloatSize {
-	return AdaptiveSize.keepingAspect(this.first, this.second, byHeight)
+fun Size.keepingAspect(aspectSource: AspectSource = AspectSource.HEIGHT): Size {
+	return AdaptiveSize.instance().keepingAspect(
+		this.height,
+		this.width,
+		aspectSource
+	)
 }
 
-fun Pair<Int, Int>.keepingAspect(byHeight: Boolean = true): IntSize {
-	return AdaptiveSize.keepingAspect(this.first.toFloat(), this.second.toFloat(), byHeight)
-		.let { IntSize(it.height.toInt(), it.width.toInt()) }
+fun IntSize.keepingAspect(aspectSource: AspectSource = AspectSource.HEIGHT): IntSize {
+	return AdaptiveSize.instance().keepingAspect(
+		this.height.toFloat(),
+		this.width.toFloat(),
+		aspectSource
+	).let { IntSize(it.height.toInt(), it.width.toInt()) }
 }

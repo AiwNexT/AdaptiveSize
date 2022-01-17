@@ -1,65 +1,93 @@
 package com.aiwnext.adaptivesize
 
 import android.content.Context
-import com.aiwnext.adaptivesize.sizes.FloatSize
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.unit.IntSize
+import com.aiwnext.adaptivesize.helpers.ScopesHelper
+import com.aiwnext.adaptivesize.models.AspectSource
 
-object AdaptiveSize {
+internal class AdaptiveSize {
 
-	private var artBoardSize: Pair<Int, Int>? = null
-	private var actualSize: Pair<Int, Int>? = null
+	companion object {
+
+		private var self: AdaptiveSize? = null
+
+		fun instance(): AdaptiveSize {
+			return self ?: AdaptiveSize()
+		}
+	}
+
+	private val scopesHelper by lazy {
+		ScopesHelper(actualSize)
+	}
+
+	private var actualSize: Size? = null
+
+	init {
+	    self = this
+	}
 
 	fun setup(
 		context: Context,
-		artBoardHeight: Int,
-		artBoardWidth: Int
+		artBoardSize: IntSize? = null
 	) {
-		artBoardSize = Pair(artBoardHeight, artBoardWidth)
+		artBoardSize
 		val (height, width) = context.resources
 			.displayMetrics
 			.run { heightPixels / density to widthPixels / density }
-		actualSize = Pair(height.toInt(), width.toInt())
+		actualSize = Size(
+			height = height,
+			width = width
+		)
 	}
 
 	private fun getWidthRatio(): Float {
-		return actualSize!!.second.toFloat() / artBoardSize!!.second.toFloat()
+		return actualSize!!.width / artBoardSize!!.width
 	}
 
 	private fun getHeightRatio(): Float {
-		return actualSize!!.first.toFloat() / artBoardSize!!.first.toFloat()
+		return actualSize!!.height / artBoardSize!!.height
 	}
 
-	internal fun adaptiveWidth(width: Float): Float {
+	private fun getAverageRatio(): Float {
+		return ((getHeightRatio() + getWidthRatio()) / 2)
+	}
+
+	fun adaptiveWidth(width: Float): Float {
 		return try {
 			return width * getWidthRatio()
 		} catch (e: Exception) { width }
 	}
 
-	internal fun adaptiveHeight(height: Float): Float {
+	fun adaptiveHeight(height: Float): Float {
 		return try {
 			return height * getHeightRatio()
 		} catch (e: Exception) { height }
 	}
 
-	internal fun adaptiveAverage(value: Float): Float {
+	fun adaptiveAverage(value: Float): Float {
 		return try {
-			return value * ((getHeightRatio() + getWidthRatio()) / 2)
+			return value * getAverageRatio()
 		} catch (e: Exception) { value }
 	}
 
-	internal fun keepingAspect(
+	 fun keepingAspect(
 		height: Float,
 		width: Float,
-		byHeight: Boolean = true
-	): FloatSize {
-		return if (byHeight) {
-			FloatSize(
-				adaptiveHeight(height),
-				adaptiveHeight(width)
+		aspectSource: AspectSource
+	): Size {
+		return when (aspectSource) {
+			AspectSource.WIDTH -> Size(
+				height = adaptiveWidth(height),
+				width = adaptiveWidth(width)
 			)
-		} else {
-			FloatSize(
-				adaptiveWidth(height),
-				adaptiveWidth(width)
+			AspectSource.HEIGHT -> Size(
+				height = adaptiveHeight(height),
+				width = adaptiveHeight(width)
+			)
+			AspectSource.AVERAGE -> Size(
+				height = adaptiveAverage(height),
+				width = adaptiveAverage(width)
 			)
 		}
 	}

@@ -24,6 +24,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.0.5"
+    }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -40,4 +49,10 @@ afterEvaluate {
             }
         }
     }
+}
+
+def composeVersion = '1.0.5'
+
+dependencies {
+    api "androidx.compose.ui:ui:$composeVersion"
 }
