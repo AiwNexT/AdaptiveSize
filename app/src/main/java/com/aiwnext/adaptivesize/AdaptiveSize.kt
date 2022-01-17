@@ -3,10 +3,11 @@ package com.aiwnext.adaptivesize
 import android.content.Context
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.IntSize
+import com.aiwnext.adaptivesize.exceptions.InitException
 import com.aiwnext.adaptivesize.helpers.ScopesHelper
 import com.aiwnext.adaptivesize.models.AspectSource
 
-internal class AdaptiveSize {
+class AdaptiveSize {
 
 	companion object {
 
@@ -18,7 +19,7 @@ internal class AdaptiveSize {
 	}
 
 	private val scopesHelper by lazy {
-		ScopesHelper(actualSize)
+		ScopesHelper(actualSize ?: throw InitException())
 	}
 
 	private var actualSize: Size? = null
@@ -31,7 +32,6 @@ internal class AdaptiveSize {
 		context: Context,
 		artBoardSize: IntSize? = null
 	) {
-		artBoardSize
 		val (height, width) = context.resources
 			.displayMetrics
 			.run { heightPixels / density to widthPixels / density }
@@ -39,56 +39,69 @@ internal class AdaptiveSize {
 			height = height,
 			width = width
 		)
+
+		val abSize = artBoardSize ?: IntSize(
+			Extras.DEFAULT_ARTBOARD_WIDTH,
+			Extras.DEFAULT_ARTBOARD_HEIGHT
+		)
+		scopesHelper.addScope(Extras.DEFAULT_SCOPE_NAME, abSize)
 	}
 
-	private fun getWidthRatio(): Float {
-		return actualSize!!.width / artBoardSize!!.width
+	fun registerScope(
+		scopeName: String,
+		artBoardSize: IntSize
+	) {
+		scopesHelper.addScope(scopeName, artBoardSize)
 	}
 
-	private fun getHeightRatio(): Float {
-		return actualSize!!.height / artBoardSize!!.height
+	fun unregisterScope(scopeName: String) {
+		scopesHelper.removeScope(scopeName)
 	}
 
-	private fun getAverageRatio(): Float {
-		return ((getHeightRatio() + getWidthRatio()) / 2)
+	internal fun adaptiveWidth(
+		width: Float,
+		scopeName: String? = null
+	): Float {
+		return width * scopesHelper.getWidthRatio(scopeName.orDefaultScope())
 	}
 
-	fun adaptiveWidth(width: Float): Float {
-		return try {
-			return width * getWidthRatio()
-		} catch (e: Exception) { width }
+	internal fun adaptiveHeight(
+		height: Float,
+		scopeName: String? = null
+	): Float {
+		return height * scopesHelper.getHeightRatio(scopeName.orDefaultScope())
 	}
 
-	fun adaptiveHeight(height: Float): Float {
-		return try {
-			return height * getHeightRatio()
-		} catch (e: Exception) { height }
+	internal fun adaptiveAverage(
+		value: Float,
+		scopeName: String? = null
+	): Float {
+		return value * scopesHelper.getAverageRatio(scopeName.orDefaultScope())
 	}
 
-	fun adaptiveAverage(value: Float): Float {
-		return try {
-			return value * getAverageRatio()
-		} catch (e: Exception) { value }
-	}
-
-	 fun keepingAspect(
+	internal fun keepingAspect(
 		height: Float,
 		width: Float,
-		aspectSource: AspectSource
+		aspectSource: AspectSource,
+		scopeName: String? = null
 	): Size {
 		return when (aspectSource) {
 			AspectSource.WIDTH -> Size(
-				height = adaptiveWidth(height),
-				width = adaptiveWidth(width)
+				height = adaptiveWidth(height, scopeName),
+				width = adaptiveWidth(width, scopeName)
 			)
 			AspectSource.HEIGHT -> Size(
-				height = adaptiveHeight(height),
-				width = adaptiveHeight(width)
+				height = adaptiveHeight(height, scopeName),
+				width = adaptiveHeight(width, scopeName)
 			)
 			AspectSource.AVERAGE -> Size(
-				height = adaptiveAverage(height),
-				width = adaptiveAverage(width)
+				height = adaptiveAverage(height, scopeName),
+				width = adaptiveAverage(width, scopeName)
 			)
 		}
+	}
+
+	private fun String?.orDefaultScope(): String {
+		return this ?: Extras.DEFAULT_SCOPE_NAME
 	}
 }
