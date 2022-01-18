@@ -62,21 +62,27 @@ class AdaptiveSize {
 		width: Float,
 		scopeName: String? = null
 	): Float {
-		return width * scopesHelper.getWidthRatio(scopeName.orDefaultScope())
+		return try {
+			width * scopesHelper.getWidthRatio(scopeName.orDefaultScope())
+		} catch (ex: Exception) { width }
 	}
 
 	internal fun adaptiveHeight(
 		height: Float,
 		scopeName: String? = null
 	): Float {
-		return height * scopesHelper.getHeightRatio(scopeName.orDefaultScope())
+		return try {
+			height * scopesHelper.getHeightRatio(scopeName.orDefaultScope())
+		} catch (ex: Exception) { height }
 	}
 
 	internal fun adaptiveAverage(
 		value: Float,
 		scopeName: String? = null
 	): Float {
-		return value * scopesHelper.getAverageRatio(scopeName.orDefaultScope())
+		return try {
+			value * scopesHelper.getAverageRatio(scopeName.orDefaultScope())
+		} catch (ex: Exception) { value }
 	}
 
 	internal fun keepingAspect(
@@ -85,19 +91,23 @@ class AdaptiveSize {
 		aspectSource: AspectSource,
 		scopeName: String? = null
 	): Size {
-		return when (aspectSource) {
-			AspectSource.WIDTH -> Size(
-				height = adaptiveWidth(height, scopeName),
-				width = adaptiveWidth(width, scopeName)
-			)
-			AspectSource.HEIGHT -> Size(
-				height = adaptiveHeight(height, scopeName),
-				width = adaptiveHeight(width, scopeName)
-			)
-			AspectSource.AVERAGE -> Size(
-				height = adaptiveAverage(height, scopeName),
-				width = adaptiveAverage(width, scopeName)
-			)
+		return try {
+			when (aspectSource) {
+				AspectSource.WIDTH -> Size(
+					height = adaptiveWidth(height, scopeName),
+					width = adaptiveWidth(width, scopeName)
+				)
+				AspectSource.HEIGHT -> Size(
+					height = adaptiveHeight(height, scopeName),
+					width = adaptiveHeight(width, scopeName)
+				)
+				AspectSource.AVERAGE -> Size(
+					height = adaptiveAverage(height, scopeName),
+					width = adaptiveAverage(width, scopeName)
+				)
+			}
+		} catch (ex: Exception) {
+			Size(width, height)
 		}
 	}
 
