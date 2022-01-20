@@ -111,6 +111,10 @@ class AdaptiveSize {
 		}
 	}
 
+	fun testCi() {
+
+	}
+
 	private fun String?.orDefaultScope(): String {
 		return this ?: Extras.DEFAULT_SCOPE_NAME
 	}
