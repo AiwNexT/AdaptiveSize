@@ -32,8 +32,8 @@ class AdaptiveSize {
 		artBoardSize: IntSize
 	) {
 		actualSize = Size(
-			height = screenSize.width,
-			width = screenSize.height
+			height = screenSize.height,
+			width = screenSize.width
 		)
 
 		val abSize = artBoardSize
