@@ -1,6 +1,5 @@
 package com.aiwnext.adaptivesize
 
-import android.content.Context
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.IntSize
 import com.aiwnext.adaptivesize.exceptions.InitException
@@ -29,21 +28,15 @@ class AdaptiveSize {
 	}
 
 	fun setup(
-		context: Context,
-		artBoardSize: IntSize? = null
+		screenSize: Size,
+		artBoardSize: IntSize
 	) {
-		val (height, width) = context.resources
-			.displayMetrics
-			.run { heightPixels / density to widthPixels / density }
 		actualSize = Size(
-			height = height,
-			width = width
+			height = screenSize.width,
+			width = screenSize.height
 		)
 
-		val abSize = artBoardSize ?: IntSize(
-			Extras.DEFAULT_ARTBOARD_WIDTH,
-			Extras.DEFAULT_ARTBOARD_HEIGHT
-		)
+		val abSize = artBoardSize
 		scopesHelper.addScope(Extras.DEFAULT_SCOPE_NAME, abSize)
 	}
 
