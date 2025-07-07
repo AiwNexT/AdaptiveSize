@@ -32,7 +32,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.6"
+        kotlinCompilerExtensionVersion "1.5.10"
     }
 
     kotlinOptions {
@@ -47,13 +47,13 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.AiwNexT'
                 artifactId = 'AdaptiveSize'
-                version = '1.0.10'
+                version = '1.0.11'
             }
         }
     }
 }
 
-def composeVersion = '1.8.3'
+def composeVersion = '1.6.8'
 
 dependencies {
     api "androidx.compose.ui:ui:$composeVersion"
